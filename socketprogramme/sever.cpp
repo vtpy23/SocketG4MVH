@@ -92,11 +92,42 @@ int main() {
                 running = false;
             }
             else if (receivedMessage == "1") {
-                /*EnumWindows(EnumWindowsProc, 0);*/
-                wstring result;
-                result = ListVisibleWindows();
-                string tmp1(result.begin(), result.end());
+                // Liệt kê các cửa sổ hiển thị
+                std::wstring result = ListVisibleWindows();
+                std::string tmp1(result.begin(), result.end());
                 sendbuf = tmp1;
+
+                // Gửi danh sách các ứng dụng về client
+                iResult = send(ClientSocket, sendbuf.c_str(), (int)sendbuf.length(), 0);
+                if (iResult == SOCKET_ERROR) {
+                    std::cerr << "Send failed: " << WSAGetLastError() << std::endl;
+                    closesocket(ClientSocket);
+                    WSACleanup();
+                    return 1;
+                }
+
+                // Nhận PID từ client để tắt ứng dụng
+                iResult = recv(ClientSocket, recvbuf, recvbuflen, 0);
+                if (iResult > 0) {
+                    std::string receivedPID(recvbuf, iResult);
+                    DWORD pidToTerminate = std::stoi(receivedPID);  // Chuyển đổi PID từ chuỗi sang số
+
+                    if (terminateAppByPID(pidToTerminate)) {
+                        sendbuf = "Application terminated successfully";
+                    }
+                    else {
+                        sendbuf = "Failed to terminate application";
+                    }
+
+                    // Gửi phản hồi về client
+                    iResult = send(ClientSocket, sendbuf.c_str(), (int)sendbuf.length(), 0);
+                    if (iResult == SOCKET_ERROR) {
+                        std::cerr << "Send failed: " << WSAGetLastError() << std::endl;
+                        closesocket(ClientSocket);
+                        WSACleanup();
+                        return 1;
+                    }
+                }
             }
             else if (receivedMessage == "2") {
                 /*EnumWindows(EnumWindowsProc, 0);*/
@@ -113,6 +144,41 @@ int main() {
             }
             else if (receivedMessage == "4") {
                 system("C:\\WINDOWS\\System32\\shutdown/s");
+            }
+            else if (receivedMessage == "on_app") {
+                // Gửi yêu cầu đến client để cung cấp đường dẫn tới ứng dụng muốn bật
+                sendbuf = "Please provide the full path of the application you want to start:";
+                iResult = send(ClientSocket, sendbuf.c_str(), (int)sendbuf.length(), 0);
+                if (iResult == SOCKET_ERROR) {
+                    std::cerr << "Send failed: " << WSAGetLastError() << std::endl;
+                    closesocket(ClientSocket);
+                    WSACleanup();
+                    return 1;
+                }
+
+                // Nhận đường dẫn từ client
+                iResult = recv(ClientSocket, recvbuf, recvbuflen, 0);
+                if (iResult > 0) {
+                    std::string receivedAppPath(recvbuf, iResult);
+                    std::wstring appPath = std::wstring(receivedAppPath.begin(), receivedAppPath.end()); // Chuyển đổi từ string sang wstring
+
+                    // Khởi động ứng dụng với đường dẫn nhận được
+                    if (startApplication(appPath)) {
+                        sendbuf = "Application started successfully";
+                    }
+                    else {
+                        sendbuf = "Failed to start application";
+                    }
+
+                    // Gửi phản hồi về client
+                    iResult = send(ClientSocket, sendbuf.c_str(), (int)sendbuf.length(), 0);
+                    if (iResult == SOCKET_ERROR) {
+                        std::cerr << "Send failed: " << WSAGetLastError() << std::endl;
+                        closesocket(ClientSocket);
+                        WSACleanup();
+                        return 1;
+                    }
+                }
             }
         }
         else if (iResult == SOCKET_ERROR) {

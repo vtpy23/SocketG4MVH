@@ -5,31 +5,35 @@
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
-
+#include <map>
 
 using namespace cv;
 using namespace std;
 
 std::wstringstream activeAppTitlesStream;
+std::map<std::wstring, DWORD> windowTitlesAndPIDs;
 
 BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam) {
     if (IsWindowVisible(hwnd)) {
         TCHAR windowTitle[256];
-     
         GetWindowText(hwnd, windowTitle, sizeof(windowTitle) / sizeof(TCHAR));
 
-        
         if (_tcslen(windowTitle) > 0) {
-            activeAppTitlesStream << windowTitle << L"\n"; 
+            DWORD pid;
+            GetWindowThreadProcessId(hwnd, &pid);  // Lấy PID của cửa sổ
+            activeAppTitlesStream << windowTitle << L" (PID: " << pid << L")\n";
+            windowTitlesAndPIDs[windowTitle] = pid; // Lưu tiêu đề và PID vào map
         }
     }
-    return TRUE; 
+    return TRUE;
 }
 
 
 std::wstring ListVisibleWindows() {
+    activeAppTitlesStream.str(L"");  // Xóa nội dung cũ
+    windowTitlesAndPIDs.clear();     // Xóa map cũ
     EnumWindows(EnumWindowsProc, 0);
-    return activeAppTitlesStream.str(); 
+    return activeAppTitlesStream.str();
 }
 
 std::wstring ListServices() {
@@ -96,3 +100,33 @@ bool imageCapture() {
     return true;
 }
 
+bool terminateAppByPID(DWORD pid) {
+    HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, pid);
+    if (hProcess == NULL) {
+        std::cerr << "Failed to open process with PID: " << pid << std::endl;
+        return false;
+    }
+
+    if (!TerminateProcess(hProcess, 0)) {
+        std::cerr << "Failed to terminate process with PID: " << pid << std::endl;
+        CloseHandle(hProcess);
+        return false;
+    }
+
+    CloseHandle(hProcess);
+    return true;
+}
+
+bool startApplication(const std::wstring& appPath) {
+    STARTUPINFO si = { sizeof(si) };
+    PROCESS_INFORMATION pi;
+
+    if (!CreateProcess(appPath.c_str(), NULL, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi)) {
+        std::cerr << "Failed to start application: " << wstringToString(appPath) << std::endl;
+        return false;
+    }
+
+    CloseHandle(pi.hProcess);
+    CloseHandle(pi.hThread);
+    return true;
+}
