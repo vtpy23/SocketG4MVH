@@ -30,7 +30,7 @@ int main() {
     hints.ai_protocol = IPPROTO_TCP;
 
     // Resolve the server address and port
-    iResult = getaddrinfo("192.168.1.3", DEFAULT_PORT, &hints, &result);
+    iResult = getaddrinfo("192.168.1.102", DEFAULT_PORT, &hints, &result);
     if (iResult != 0) {
         std::cerr << "getaddrinfo failed: " << iResult << std::endl;
         WSACleanup();
@@ -68,17 +68,20 @@ int main() {
     // Send messages in a loop until "quit" is sent
     bool running = true;
     while (running) {
-        std::cout << "1. List app\n";
+        std::cout << "\nChoose an action:\n";
+        std::cout << "1. List apps\n";
         std::cout << "2. List services\n";
-        std::cout << "3. Screenshot\n";
+        std::cout << "3. Take a screenshot\n";
         std::cout << "4. Shutdown\n";
         std::cout << "5. On/Off Webcam\n";
-        std::cout << "6. Take file - Delete file\n";
-        std::cout << "Enter message: ";
+        std::cout << "6. File operations\n";
+        std::cout << "Type 'quit' to exit.\n";
+        std::cout << "Enter choice: ";
         std::getline(std::cin, sendbuf);
 
         // Send the message to the server
         iResult = send(ConnectSocket, sendbuf.c_str(), (int)sendbuf.length(), 0);
+        sendbuf.clear();
         if (iResult == SOCKET_ERROR) {
             std::cerr << "Send failed: " << WSAGetLastError() << std::endl;
             closesocket(ConnectSocket);
@@ -86,16 +89,25 @@ int main() {
             return 1;
         }
 
-        // Check if the message is "quit"
+        // Quit if needed
         if (sendbuf == "quit") {
             running = false;
             break;
         }
 
-        // Receive the echo from server
+        // Receive response from the server
         iResult = recv(ConnectSocket, recvbuf, recvbuflen, 0);
         if (iResult > 0) {
-            std::cout << "Received from server: " << std::string(recvbuf, iResult) << std::endl;
+            std::string serverResponse(recvbuf, iResult);
+            std::cout << "Server response: " << serverResponse << std::endl;
+
+            // Example additional handling
+            if (serverResponse == "Please provide the file path:") {
+                std::string filePath;
+                std::cout << "Enter the file path: ";
+                std::getline(std::cin, filePath);
+                send(ConnectSocket, filePath.c_str(), filePath.length(), 0);
+            }
         }
         else if (iResult == 0) {
             std::cout << "Connection closed by server." << std::endl;
@@ -107,7 +119,6 @@ int main() {
             WSACleanup();
             return 1;
         }
-
     }
 
     // Shutdown the connection

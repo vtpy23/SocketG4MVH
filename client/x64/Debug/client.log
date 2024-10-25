@@ -1,2 +1,3 @@
 ﻿  client.cpp
+C:\Users\Admin\Desktop\SocketG4MVH\client\client.cpp(109,70): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
   client.vcxproj -> C:\Users\Admin\Desktop\SocketG4MVH\x64\Debug\client.exe

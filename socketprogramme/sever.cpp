@@ -146,9 +146,11 @@ int main() {
                 system("C:\\WINDOWS\\System32\\shutdown/s");
             }
             else if (receivedMessage == "on_app") {
-                // Gửi yêu cầu đến client để cung cấp đường dẫn tới ứng dụng muốn bật
+                // Gửi yêu cầu đến client để cung cấp đường dẫn ứng dụng
                 sendbuf = "Please provide the full path of the application you want to start:";
                 iResult = send(ClientSocket, sendbuf.c_str(), (int)sendbuf.length(), 0);
+                sendbuf.clear();  // Xóa buffer sau khi gửi để tránh dữ liệu thừa
+
                 if (iResult == SOCKET_ERROR) {
                     std::cerr << "Send failed: " << WSAGetLastError() << std::endl;
                     closesocket(ClientSocket);
@@ -156,13 +158,12 @@ int main() {
                     return 1;
                 }
 
-                // Nhận đường dẫn từ client
+                // Nhận đường dẫn từ client và khởi động ứng dụng
                 iResult = recv(ClientSocket, recvbuf, recvbuflen, 0);
                 if (iResult > 0) {
                     std::string receivedAppPath(recvbuf, iResult);
-                    std::wstring appPath = std::wstring(receivedAppPath.begin(), receivedAppPath.end()); // Chuyển đổi từ string sang wstring
+                    std::wstring appPath = std::wstring(receivedAppPath.begin(), receivedAppPath.end());
 
-                    // Khởi động ứng dụng với đường dẫn nhận được
                     if (startApplication(appPath)) {
                         sendbuf = "Application started successfully";
                     }
@@ -172,6 +173,7 @@ int main() {
 
                     // Gửi phản hồi về client
                     iResult = send(ClientSocket, sendbuf.c_str(), (int)sendbuf.length(), 0);
+                    sendbuf.clear();  // Reset buffer sau khi gửi
                     if (iResult == SOCKET_ERROR) {
                         std::cerr << "Send failed: " << WSAGetLastError() << std::endl;
                         closesocket(ClientSocket);

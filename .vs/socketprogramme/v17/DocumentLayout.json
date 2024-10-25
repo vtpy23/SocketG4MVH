@@ -1,0 +1,54 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\Admin\\Desktop\\SocketG4MVH\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{09FCE7FB-1E62-406F-85CB-FC8B989214E3}|client\\client.vcxproj|C:\\Users\\Admin\\Desktop\\SocketG4MVH\\client\\client.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{09FCE7FB-1E62-406F-85CB-FC8B989214E3}|client\\client.vcxproj|solutionrelative:client\\client.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{57F6B19C-7932-4997-884C-935E686B16A4}|socketprogramme\\socketprogramme.vcxproj|C:\\Users\\Admin\\Desktop\\SocketG4MVH\\socketprogramme\\sever.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{57F6B19C-7932-4997-884C-935E686B16A4}|socketprogramme\\socketprogramme.vcxproj|solutionrelative:socketprogramme\\sever.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "sever.cpp",
+              "DocumentMoniker": "C:\\Users\\Admin\\Desktop\\SocketG4MVH\\socketprogramme\\sever.cpp",
+              "RelativeDocumentMoniker": "socketprogramme\\sever.cpp",
+              "ToolTip": "C:\\Users\\Admin\\Desktop\\SocketG4MVH\\socketprogramme\\sever.cpp",
+              "RelativeToolTip": "socketprogramme\\sever.cpp",
+              "ViewState": "AgIAAIUAAAAAAAAAAAAmwJQAAABIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-10-25T10:13:32.748Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "client.cpp",
+              "DocumentMoniker": "C:\\Users\\Admin\\Desktop\\SocketG4MVH\\client\\client.cpp",
+              "RelativeDocumentMoniker": "client\\client.cpp",
+              "ToolTip": "C:\\Users\\Admin\\Desktop\\SocketG4MVH\\client\\client.cpp",
+              "RelativeToolTip": "client\\client.cpp",
+              "ViewState": "AgIAACoAAAAAAAAAAAAAADYAAAAnAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-10-25T09:47:59.553Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
